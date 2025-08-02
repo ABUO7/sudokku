@@ -20,7 +20,7 @@ func main() {
 		fmt.Println("Error")
 		return
 	}
-
+	// s
 	if !SolveSudoku(board) {
 		fmt.Println("Error") // если не получилось решить
 		return
