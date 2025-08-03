@@ -1,26 +1,24 @@
-package main
+package sudoku // объявляем, что этот файл принадлежит пакету sudoku
 
-// SolveSudoku — рекурсивно решает доску
+// SolveSudoku — решает Sudoku с помощью рекурсии и метода backtracking (поиск с возвратом)
 func SolveSudoku(board [][]int) bool {
-	for row := 0; row < 9; row++ {
-		for col := 0; col < 9; col++ {
-			// Если ячейка пустая
-			if board[row][col] == 0 {
-				// Пробуем вставить цифры от 1 до 9
-				for num := 1; num <= 9; num++ {
-					if isValidMove(board, row, col, num) {
-						board[row][col] = num // вставляем
+	for row := 0; row < 9; row++ { // внешний цикл по строкам доски от 0 до 8
+		for col := 0; col < 9; col++ { // внутренний цикл по столбцам текущей строки от 0 до 8
+			if board[row][col] == 0 { // если текущая ячейка пустая (значение 0)
+				for val := 1; val <= 9; val++ { // пробуем вставить числа от 1 до 9
+					if IsValidMove(board, row, col, val) { // проверяем, не нарушит ли вставка правила Sudoku
+						board[row][col] = val // временно вставляем значение в ячейку
 
-						if SolveSudoku(board) {
-							return true // если дальше всё ок — возвращаемся
+						if SolveSudoku(board) { // рекурсивно пытаемся решить оставшуюся часть доски
+							return true // если решение найдено — возвращаем true, прекращаем текущий вызов
 						}
 
-						board[row][col] = 0 // иначе — откатываем
+						board[row][col] = 0 // если не сработало — отменяем вставку (откат назад — backtracking)
 					}
 				}
-				return false // если ни одно число не подошло
+				return false // если ни одно число от 1 до 9 не подошло, текущий путь — тупик
 			}
 		}
 	}
-	return true // если все ячейки заполнены корректно
+	return true // если дошли до конца без возвратов — Sudoku решён успешно
 }

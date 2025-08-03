@@ -1,47 +1,33 @@
-package main
+package sudoku // файл принадлежит пакету sudoku
 
-// isValidMove — проверяет, можно ли поставить val в board[row][col] без конфликтов
-func isValidMove(board [][]int, row, col, val int) bool {
-	// Проверка строки и столбца
-	for i := 0; i < 9; i++ {
-		if board[row][i] == val && i != col {
-			return false
-		}
-		if board[i][col] == val && i != row {
-			return false
+// IsValidMove — проверяет, можно ли вставить число val в клетку [row][col] по правилам Sudoku
+func IsValidMove(board [][]int, row, col, val int) bool {
+	// Проверка по строке:
+	for i := 0; i < 9; i++ { // внешний цикл: итерируемся по всем колонкам текущей строки
+		if board[row][i] == val { // если в этой строке уже есть такое число
+			return false // недопустимо вставлять его снова — нарушается правило уникальности
 		}
 	}
 
-	// Проверка 3x3 квадрата
-	boxRow := (row / 3) * 3
-	boxCol := (col / 3) * 3
-	for i := 0; i < 3; i++ {
-		for j := 0; j < 3; j++ {
-			r := boxRow + i
-			c := boxCol + j
-			if board[r][c] == val && (r != row || c != col) {
-				return false
+	// Проверка по столбцу:
+	for i := 0; i < 9; i++ { // внешний цикл: итерируемся по всем строкам текущего столбца
+		if board[i][col] == val { // если в этом столбце уже есть такое число
+			return false // нарушается правило — число уже есть в столбце
+		}
+	}
+
+	// Проверка по 3x3 квадрату:
+	startRow := (row / 3) * 3 // определяем верхнюю границу квадрата: 0, 3 или 6
+	startCol := (col / 3) * 3 // определяем левую границу квадрата: 0, 3 или 6
+
+	for i := 0; i < 3; i++ { // внешний цикл: 3 строки квадрата
+		for j := 0; j < 3; j++ { // внутренний цикл: 3 колонки квадрата
+			if board[startRow+i][startCol+j] == val { // если значение уже присутствует в квадрате
+				return false // нарушается правило: в квадрате 3x3 все числа должны быть уникальны
 			}
 		}
 	}
 
-	return true
-}
-
-// IsValidBoard — проверяет всю доску: нет ли конфликта в уже заполненных клетках
-func IsValidBoard(board [][]int) bool {
-	for row := 0; row < 9; row++ {
-		for col := 0; col < 9; col++ {
-			val := board[row][col]
-			if val != 0 {
-				board[row][col] = 0 // временно обнуляем
-				if !isValidMove(board, row, col, val) {
-					board[row][col] = val // восстанавливаем
-					return false
-				}
-				board[row][col] = val
-			}
-		}
-	}
+	// Если не нарушено ни одно из трёх правил — ход допустим
 	return true
 }
